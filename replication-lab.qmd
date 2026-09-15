@@ -162,11 +162,11 @@ Consider:
 
 **Your response:**
 
-This laboratory tests whether Ridge Regression or Random Forest predicts hourly bike-rental demand more accurately. I will define the better model as the one with lower out-of-sample RMSE and MAE, while keeping the dataset, outcome, predictors, preprocessing, and model settings consistent. A defensible comparison should also show whether the model ranking and estimated error remain stable when the evaluation changes from a random split to a temporal split.
+This lab compares Ridge Regression and Random Forest for predicting hourly bike demand. A stronger model should produce lower test set RMSE and MAE, but that comparison is only meaningful if it remains consistent across reasonable evaluation designs. I will therefore examine both the model ranking and the estimated error under random and temporal splits.
 
 ## Replication Strategy
 
-I treat this study as a partial replication. The prediction problem, data, predictors, models, preprocessing, and evaluation metrics are held constant, while the train/test split is deliberately changed. This tests whether the model-comparison conclusion is robust to a reasonable change in evaluation design.
+I treat this as a partial replication because the outcome, predictors, preprocessing, models, and metrics remain fixed while the train and test split changes. This design isolates whether the model comparison is sensitive to how the evaluation sample is constructed.
 
 # Predict Before You Inspect
 
@@ -178,7 +178,7 @@ Do you expect RMSE and MAE to be similar or different under random and temporal 
 
 **Your response:**
 
-I expect both RMSE and MAE to be higher under temporal evaluation. A random split mixes observations from across 2011–2012, so its training and test sets may be more similar. The temporal split instead requires patterns learned from earlier observations to predict later demand, which may have changed over time.
+I expect RMSE and MAE to be higher under the temporal split. Random splitting mixes observations across both years, which can make the training and test sets more alike. Temporal evaluation instead asks the models to generalize from earlier observations to later demand, where the data distribution may have shifted.
 
 ## Prediction 2 — Model Ranking
 
@@ -186,7 +186,7 @@ Do you expect the stronger model to remain the same under both evaluation design
 
 **Your response:**
 
-I expect Random Forest to have lower RMSE and MAE than Ridge Regression under both designs because bike demand may involve nonlinear relationships and interactions among hour, weather, and calendar variables. However, I am less certain about its advantage under temporal evaluation because a flexible model may be sensitive to changes over time. Therefore, I predict that the ranking will remain the same, but the size of the difference may change.
+I expect Random Forest to outperform Ridge Regression under both splits because hourly bike demand likely includes nonlinear relationships and interactions among time, weather, and calendar variables. However, the size of that advantage may change under temporal evaluation if those relationships are not stable over time. I therefore expect the ranking to remain the same, but not necessarily the error gap.
 
 > Your prediction is not graded on whether it turns out to be correct. The purpose is to make your prior reasoning visible before you inspect the evidence.
 
