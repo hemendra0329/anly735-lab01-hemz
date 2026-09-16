@@ -60,6 +60,7 @@ replication-lab-01-evaluation-design-matters/
 │
 ├── README.md
 ├── replication-lab.qmd
+├── requirements.txt
 ├── .gitignore
 │
 ├── data/
@@ -125,6 +126,12 @@ Install them if necessary:
 
 ```bash
 pip install pandas numpy scikit-learn
+```
+
+The submitted run used Python 3.12.14. Its exact package versions are recorded in `requirements.txt`. To reproduce that environment, use:
+
+```bash
+pip install -r requirements.txt
 ```
 
 From the repository root, run:

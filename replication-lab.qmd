@@ -162,11 +162,11 @@ Consider:
 
 **Your response:**
 
-This lab compares Ridge Regression and Random Forest for predicting hourly bike demand. A stronger model should produce lower test set RMSE and MAE, but that comparison is only meaningful if it remains consistent across reasonable evaluation designs. I will therefore examine both the model ranking and the estimated error under random and temporal splits.
+This lab compares Ridge Regression and Random Forest for predicting hourly bike demand. A stronger model should produce lower test set RMSE and MAE, and the comparison is more defensible if the model ranking remains consistent across reasonable evaluation designs. I will therefore examine both the ranking and the estimated error under random and temporal splits.
 
 ## Replication Strategy
 
-I treat this as a partial replication because the outcome, predictors, preprocessing, models, and metrics remain fixed while the train and test split changes. This design isolates whether the model comparison is sensitive to how the evaluation sample is constructed.
+I treat this as a partial replication because the dataset, outcome, predictors, preprocessing, models, and metrics remain fixed while the train and test split changes. This design isolates whether the model comparison is sensitive to how the evaluation sample is constructed. It does not reproduce the event-labeling analysis in Fanaee-T and Gama (2014). That paper documents the source dataset used here.
 
 # Predict Before You Inspect
 
@@ -212,6 +212,10 @@ Rscript .\r\lab01_analysis.R
 
 If you use RStudio, you may instead open the R script and run it interactively.
 
+## Computational Record
+
+I ran the supplied Python script without changing the analysis code. The run used Python 3.12.14, NumPy 2.5.3, pandas 3.0.5, and scikit-learn 1.9.1. Both designs used 13,903 training observations and 3,476 test observations. The temporal test period began on August 7, 2012 at 12:00. The fixed settings were seed 735, Ridge `alpha = 1.0`, and a 300-tree Random Forest with `min_samples_leaf = 2`.
+
 Your analysis should:
 
 1. acquire or access the dataset reproducibly;
@@ -255,7 +259,7 @@ Address all of the following:
 
 The task is to predict total hourly bike rentals (`cnt`) using Ridge Regression and Random Forest. The dataset, outcome, twelve predictors, exclusions, preprocessing, model settings, 80/20 proportions, and error metrics remain fixed. The condition that changes is the allocation of observations: the random split mixes observations from across the study period, while the temporal split trains on the earliest 80% and tests on the latest 20%.
 
-# A — Align
+## A — Align
 
 **Are the model comparisons fair within each evaluation design?**
 
@@ -270,15 +274,15 @@ Consider:
 
 **Your response:**
 
-The comparison is fair within each evaluation design. Both models receive the same training and test observations, outcome, predictors, and performance metrics. Each pipeline applies the same imputation, standardization, and categorical encoding, with preprocessing fitted only on the training data. The test data are used only after fitting. Model settings are also held fixed across designs. The test observations differ between the random and temporal designs, but that change is the methodological condition being evaluated rather than an unintended difference.
+The comparison is fair within each evaluation design. Both models receive the same training and test observations, outcome, predictors, and performance metrics. Each pipeline applies the same imputation, standardization, and categorical encoding, with preprocessing fitted only on the training data. The test data are used only after fitting. The supplied model settings remain fixed across designs, and neither model is tuned. Both models also ran in the same software environment. The test observations differ between the random and temporal designs, but that change is the methodological condition being evaluated rather than an unintended difference. Because tuning was not part of the experiment, the results compare these model configurations rather than the best possible version of each model family. The analysis makes no claim about training speed or computational efficiency.
 
-# I — Inspect
+## I — Inspect
 
 **What do RMSE and MAE show?**
 
 First, explain each metric briefly in the context of this prediction problem.
 
-## RMSE
+### RMSE
 
 Explain what RMSE tells you here and whether lower or higher values indicate better predictive performance.
 
@@ -286,7 +290,7 @@ Explain what RMSE tells you here and whether lower or higher values indicate bet
 
 RMSE is the square root of the average squared prediction error, expressed in hourly rental counts. Because squaring gives more weight to large errors, RMSE is especially sensitive to occasional large misses. Lower values indicate better predictive performance.
 
-## MAE
+### MAE
 
 Explain what MAE tells you here and whether lower or higher values indicate better predictive performance.
 
@@ -294,7 +298,7 @@ Explain what MAE tells you here and whether lower or higher values indicate bett
 
 MAE is the average absolute difference between predicted and observed hourly rental counts. It describes the typical size of an error without giving unusually large errors as much influence as RMSE does. Lower values indicate better predictive performance.
 
-## Performance Comparison
+### Performance Comparison
 
 Now compare the results.
 
@@ -314,13 +318,13 @@ Random Forest performs better under both designs. Under random evaluation, its R
 
 Moving from random to temporal evaluation increases Ridge RMSE by 32.97, or 32.7%, and MAE by 24.23, or 32.5%. Random Forest RMSE increases by 31.96, or 61.4%, and MAE by 23.50, or 72.2%. The absolute increases are similar, with Ridge increasing slightly more on both metrics. Relative to its lower random split errors, however, Random Forest shows the larger percentage deterioration.
 
-# R — Review
+## R — Review
 
 **Does the conclusion change when the evaluation design changes?**
 
 Distinguish between at least two kinds of conclusions:
 
-## Conclusion about model ranking
+### Conclusion about model ranking
 
 Does the identity of the stronger model change?
 
@@ -328,7 +332,7 @@ Does the identity of the stronger model change?
 
 No. Random Forest has lower RMSE and MAE under both evaluation designs, so the identity of the stronger model remains unchanged.
 
-## Conclusion about expected predictive performance
+### Conclusion about expected predictive performance
 
 Does the estimated level of performance change?
 
@@ -336,7 +340,7 @@ Does the estimated level of performance change?
 
 Yes. Both models have materially higher RMSE and MAE under temporal evaluation. The random split therefore gives a more favorable estimate of expected performance than the later time period does, even though it produces the same ranking.
 
-## Conclusion about deployment
+### Conclusion about deployment
 
 Which evaluation design better represents a situation in which a model is trained on historical observations and then used to predict future observations? Explain.
 
@@ -362,9 +366,9 @@ Your discussion should consider at least three of the following:
 
 **Your response:**
 
-The random split draws training and test observations from the full 2011 to 2012 period. As a result, conditions represented in the test set are more likely to have close counterparts in training. This is largely an interpolation task within a mixed historical sample.
+The random split draws training and test observations from the full 2011 to 2012 period. Conditions represented in the test set are therefore more likely to have close counterparts in training. This is largely an interpolation task within a mixed historical sample.
 
-The temporal split is harder because it fits the models on earlier observations and evaluates them on one later block. Bike demand can shift over time as ridership grows, and relationships among hour, weather, season, and demand may also change. The late period has a different seasonal and calendar composition from a random sample of the full dataset. These sources of distribution shift can increase error even when model specifications remain fixed. The temporal estimate is therefore more relevant to prospective deployment, although a single cutoff cannot determine whether the difference is driven mainly by trend, seasonality, or another time dependent change.
+The temporal design fits the models on earlier observations and evaluates them on one later block. Demand levels and the relationships among hour, weather, season, and demand may change over time. The later block also has a different seasonal and calendar composition from a random sample of the full dataset. These differences could explain why both models produced larger errors under temporal evaluation. That result is consistent with distribution shift, but it does not establish the cause. The temporal estimate is more relevant to prospective deployment, although a single cutoff cannot show whether the difference comes mainly from trend, seasonality, or another time-dependent change.
 
 # Reconsider the Original Claim
 
@@ -381,7 +385,7 @@ Avoid statements that go beyond the evidence.
 
 **Revised claim:**
 
-For this dataset and the fixed model specifications, Random Forest is stronger than Ridge Regression because it has lower RMSE and MAE under both random and temporal evaluation. That relative conclusion is stable across the two designs. The expected level of performance is not stable, since both models have substantially higher error on the later observations. The random split results should therefore not be treated as estimates of prospective performance without qualification.
+For this dataset and the supplied model specifications, Random Forest is stronger than Ridge Regression because it has lower RMSE and MAE under both random and temporal evaluation. That relative conclusion is stable across the two designs. The expected level of performance is not stable, since both models have substantially higher error on the later observations. The random split results should therefore not be treated as direct estimates of performance in a historical-to-future deployment.
 
 # Replication Verdict
 
@@ -414,7 +418,7 @@ A strong defense should answer:
 
 The relative model comparison was reproduced, but the estimated level of performance was not. Random Forest ranked first under random evaluation, with RMSE of 52.08 and MAE of 32.55, compared with 100.94 and 74.64 for Ridge Regression. It remained first under temporal evaluation, with RMSE of 84.04 and MAE of 56.05, compared with 133.91 and 98.87 for Ridge. The conclusion that Random Forest is stronger is therefore stable within this analysis.
 
-The performance estimates changed materially. From random to temporal evaluation, Ridge RMSE and MAE increased by 32.7% and 32.5%. Random Forest RMSE and MAE increased by 61.4% and 72.2%. This matters because the temporal design more closely represents training on historical data and predicting later demand. The random split gives a more favorable view of both models and does not reproduce their likely prospective error.
+The performance estimates changed materially. From random to temporal evaluation, Ridge RMSE and MAE increased by 32.7% and 32.5%. Random Forest RMSE and MAE increased by 61.4% and 72.2%. This matters because the temporal design more closely represents training on historical data and predicting later demand. The random split gives a more favorable view of both models and does not reproduce the error observed on the later holdout period.
 
 The evidence therefore supports the original comparison only in part. It supports the model ranking under the two tested designs, but not a design independent estimate of predictive performance. Uncertainty remains because the lab uses one dataset, one temporal cutoff, fixed model settings, and no repeated evaluation or uncertainty intervals.
 
@@ -455,13 +459,13 @@ Complete the following statements.
 
 > Based on this laboratory, the evidence supports the claim that...
 
-Based on this laboratory, the evidence supports the claim that Random Forest predicts hourly bike rentals more accurately than Ridge Regression under both tested evaluation designs, while temporal evaluation produces higher error estimates for both models.
+Based on this laboratory, the evidence supports the claim that the supplied Random Forest configuration predicts hourly bike rentals more accurately than the supplied Ridge configuration under both tested evaluation designs, while temporal evaluation produces higher error estimates for both models.
 
 ## What the evidence does not support
 
 > Based on this laboratory, the evidence does not support the claim that...
 
-Based on this laboratory, the evidence does not support the claim that the random split errors represent future deployment performance, that Random Forest will always be the stronger model, or that these findings generalize beyond this dataset, period, predictor set, and model specifications.
+Based on this laboratory, the evidence does not support the claim that the random split errors accurately represent performance in future periods, that Random Forest will always be the stronger model, or that these findings generalize beyond this dataset, period, predictor set, and supplied model specifications.
 
 # Researcher Takeaway
 
