@@ -493,7 +493,7 @@ Before submitting, confirm each item.
 - [x] I proposed a defensible extension.
 - [x] I rendered this Quarto document to Word.
 - [x] I reviewed the rendered document before submission.
-- [ ] I committed and pushed my completed source files to GitHub.
+- [x] I committed and pushed my completed source files to GitHub.
 - [ ] I submitted the final `.docx` file in Canvas.
 
 # Submission Requirements
